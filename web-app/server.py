@@ -1,6 +1,6 @@
 from random import randint
 from flask import Flask, session, redirect, url_for, request, render_template
-from main_db_controll1 import db
+from main_db_controll import db
 def index():
    max_quiz = 3
    session['quiz'] = randint(1, max_quiz)
@@ -15,9 +15,11 @@ def test():
    if request.method == 'POST':
       # print(request.form.get('first_name'))
       obj = request.form.to_dict()
+      print(obj)
       db.add_data(obj)
       info = db.get_data()
-      return render_template('answer.html', obj=obj)
+      print(info)
+      return render_template('answer.html', obj=info)
    # obj['first_name'][0]
    # request.form.get('first_name')
    return 'Получил не POST запрос'
