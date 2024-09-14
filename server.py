@@ -1,41 +1,37 @@
+from flask import Flask, session, request, render_template, redirect, url_for, jsonify
 from random import randint
-from flask import Flask, session, redirect, url_for, request, render_template
 from main_db_controll import db
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'supersecretkey'
+
+@app.route('/')
 def index():
-   max_quiz = 3
-   session['quiz'] = randint(1, max_quiz)
+    """Display the main page and start a new quiz session."""
+    max_quiz = 3
+    session['quiz'] = randint(1, max_quiz)
+    session['last_question'] = 0
+    return render_template('main.html')
 
-   session['last_question'] = 0
-   return render_template('main.html')
-# f'''<a href="/test">Тест №{session['quiz']}</a>'''
-
-
-
+@app.route('/test', methods=['POST'])
 def test():
-   if request.method == 'POST':
-      # print(request.form.get('first_name'))
-      obj = request.form.to_dict()
-      print(obj)
-      db.add_data(obj)
-      info = db.get_data()
-      print(info)
-      return render_template('answer.html', obj=info)
-   # obj['first_name'][0]
-   # request.form.get('first_name')
-   return 'Получил не POST запрос'
+    """Handle form submissions and update the database."""
+    if request.method == 'POST':
+        try:
+            obj = request.form.to_dict()
+            db.add_data(obj)
+            info = db.get_data()
+            return render_template('answer.html', data=info)
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({"error": "Failed to process the data."}), 500
 
+    return 'Only POST requests are allowed', 405
+
+@app.route('/result')
 def result():
-   return "that's all folks!"
-
-
-
-# Створюємо об'єкт веб-програми:
-app = Flask(__name__)  
-app.add_url_rule('/', 'index', index)   # створює правило для URL '/'
-app.add_url_rule('/test', 'test', test, methods=['POST']) # створює правило для URL '/test'
-app.add_url_rule('/result', 'result', result) # створює правило для URL '/test'
-app.config['SECRET_KEY'] = 'secret_key'
+    """Display a result page."""
+    return "That's all folks!"
 
 if __name__ == '__main__':
-   # Запускаємо веб-сервер:
-   app.run(debug=True)
+    app.run(debug=True)

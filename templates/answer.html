@@ -1,20 +1,22 @@
-<!DOCTYPE html>
-<html>
-
+<!doctype html>
+<html lang="en">
 <head>
-    <title>Сайт</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-
 <body>
-    {% for user in obj %}
-        <p>
-            {% for element in user %}
-            <span>
-                {{element}}
-            </span>
-            {% endfor %}
-        </p>
-    {% endfor %}
+    <div class="centered-container">
+        <div class="form-container">
+            <h1>Submitted Data</h1>
+            <ul>
+                {% for item in data %}
+                    <li>ID: {{ item.id }}, First Name: {{ item.first_name }}, Last Name: {{ item.last_name }}, Date: {{ item.date }}</li>
+                {% endfor %}
+            </ul>
+            <a href="/">Go Back</a>
+        </div>
+    </div>
 </body>
-
 </html>
